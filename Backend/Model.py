@@ -15,7 +15,7 @@ co = cohere.Client(api_key=CohereAPIkey)
 funcs = [
     "exit", "general", "realtime", "open", "close", "play",
     "generate image", "system", "content", "google search",
-    "youtube search", "reminder"
+    "youtube search", "reminder", "whatsapp"
 ]
 
 # Initialize an empty list to store user messages.
@@ -35,6 +35,7 @@ You will decide whether a query is a 'general' query, a 'realtime' query, or is 
 -> Respond with 'reminder (datetime with message)' if a query is requesting to set a reminder like 'set a reminder at 9:00pm on 25th june for my business meeting.' respond with 'reminder 9:00pm 25th june business meeting'.
 -> Respond with 'system (task name)' if a query is asking to mute, unmute, volume up, volume down , etc. but if the query is asking to do multiple tasks, respond with 'system 1st task, system 2nd task', etc.
 -> Respond with 'content (topic)' if a query is asking to write any type of content like application, codes, emails or anything else about a specific topic but if the query is asking to write multiple types of content, respond with 'content 1st topic, content 2nd topic' and so on.
+-> Respond with 'whatsapp (contact name) message (message text)' if a query is asking to send a whatsapp message to a specific contact like 'send a whatsapp message to john saying hello' respond with 'whatsapp john message hello', if the query is 'message mom on whatsapp that i will be late' respond with 'whatsapp mom message i will be late'.
 -> Respond with 'google search (topic)' if a query is asking to search a specific topic on google but if the query is asking to search multiple topics on google, respond with 'google search 1st topic, google search 2nd topic' and so on.
 -> Respond with 'youtube search (topic)' if a query is asking to search a specific topic on youtube but if the query is asking to search multiple topics on youtube, respond with 'youtube search 1st topic, youtube search 2nd topic' and so on.
 *** If the query is asking to perform multiple tasks like 'open facebook, telegram and close whatsapp' respond with 'open facebook, open telegram, close whatsapp' ***

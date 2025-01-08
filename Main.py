@@ -15,6 +15,8 @@ from Backend.Automation import Automation
 from Backend.SpeechToText import SpeechRecognition
 from Backend.Chatbot import ChatBot
 from Backend.TextToSpeech import TextToSpeech
+
+from Backend.WhatsAppBot import WhatsAppBot
 from dotenv import dotenv_values
 from asyncio import run
 from time import sleep
@@ -28,7 +30,7 @@ Username = env_vars.get("Username")
 Assistantname = env_vars.get("Assistantname")
 DefaultMessage = f"{Username} : Hello {Assistantname}, How are you?\n{Assistantname} : Welcome {Username}. I am doing well. How may i help you?"
 subprocesses = []
-Functions = ["open", "close", "play", "system", "content", "google search", "youtube search"]
+Functions = ["open", "close", "play", "system", "content", "google search", "youtube search", "whatsapp"]
 
 def ShowDefaultChatIfNoChats():
     File = open(r'Data\ChatLog.json', 'r', encoding='utf-8')
@@ -134,7 +136,52 @@ def MainExecution():
         
     else:
         for Queries in Decision:
-            if "general" in Queries:
+            if "whatsapp" in Queries:
+                try:
+                    # Parse the command: "whatsapp [contact_name] message [message_text] at [time]"
+                    parts = Queries.replace("whatsapp ", "")
+                    parts = parts.replace("Contact ", "")
+                    parts = parts.replace("general ", "")
+                    parts = parts.split(" message ")
+                    if len(parts) >= 2:
+                        contact_name = parts[0]
+                        message_part = " ".join(parts[1:])
+                        
+                        # Check if there's a time specified
+                        if " at " in message_part:
+                            message_text, time = message_part.split(" at ")
+                            time = time.strip()
+                        else:
+                            message_text = message_part
+                            time = "now"
+                        
+                        # Initialize WhatsApp bot and send message
+                        whatsapp_bot = WhatsAppBot()
+                        success = whatsapp_bot.send_message(contact_name, message_text, time)
+                        
+                        if success:
+                            if time.lower() == "now":
+                                response = f"Message sent successfully to {contact_name}!"
+                            else:
+                                response = f"Message scheduled to be sent to {contact_name} at {time}!"
+                        else:
+                            response = "Failed to send message. Please check contact name and try again."
+                        
+                        ShowTextToScreen(f"{Assistantname} : {response}")
+                        SetAssistantStatus("Answering ...")
+                        TextToSpeech(response)
+                    else:
+                        response = "Please specify both contact name and message. For example: 'WhatsApp Yar Muhammad message Hello'"
+                        ShowTextToScreen(f"{Assistantname} : {response}")
+                        SetAssistantStatus("Answering ...")
+                        TextToSpeech(response)
+                except Exception as e:
+                    response = f"Error sending WhatsApp message: {str(e)}"
+                    ShowTextToScreen(f"{Assistantname} : {response}")
+                    SetAssistantStatus("Answering ...")
+                    TextToSpeech(response)
+                    
+            elif "general" in Queries:
                 SetAssistantStatus("Thinking ...")
                 QueryFinal = Queries.replace("general ","")
                 Answer = ChatBot(QueryModifier(QueryFinal))
